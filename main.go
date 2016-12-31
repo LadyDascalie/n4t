@@ -21,13 +21,13 @@ const (
 )
 
 var (
-	fails         Failures // Global fail count
-	subFolderName string   // flag
+	fails           Failures // Global fail count
+	subFolderName   string   // flag
 	threadsOverride int
 
 	// worker config
 	wg        sync.WaitGroup
-	Threads   = 12
+	Threads   = 10
 	Semaphore = make(chan struct{}, Threads)
 )
 
@@ -35,6 +35,11 @@ func main() {
 	flag.StringVar(&subFolderName, "f", "", "Choose a subfolder name:\n\t n4t -f folder_name")
 	flag.IntVar(&threadsOverride, "t", 0, "Choose how concurrent downloads to run (max 12):\n\t n4t -t 5")
 	flag.Parse()
+
+	if threadsOverride > 0 && threadsOverride <= 12 {
+		Threads = threadsOverride
+		color.Green("Starting with %d concurrent downloads...", Threads)
+	}
 
 	// Get url then scrape it
 	url := getUserInput()
