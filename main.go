@@ -1,13 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 	"sync"
-
-	"flag"
-	"os/user"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/fatih/color"
@@ -16,7 +15,7 @@ import (
 )
 
 const (
-	boardStem = "//is.4chan.org"
+	boardStem = "4chan.org"
 	DLFolder  = "4tools_downloads"
 )
 
