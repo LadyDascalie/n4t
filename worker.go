@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
-
-	"regexp"
 
 	"gopkg.in/cheggaaa/pb.v1"
 )
@@ -19,7 +18,9 @@ func download(media string, wg *sync.WaitGroup, bar *pb.ProgressBar) {
 	Semaphore <- struct{}{}
 	defer func() { <-Semaphore }()
 	defer wg.Done()
-	defer bar.Increment()
+	if silent == false {
+		defer bar.Increment()
+	}
 
 	resp, err := http.Get(media)
 	if err != nil {
