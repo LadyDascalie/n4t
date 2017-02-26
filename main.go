@@ -16,7 +16,7 @@ import (
 
 const (
 	boardStem = "4chan.org"
-	CDNStem   = "i.4cdn.org"
+	cdnStem   = "i.4cdn.org"
 	DLFolder  = "4tools_downloads"
 )
 
@@ -30,7 +30,7 @@ var (
 	// worker config
 	wg        sync.WaitGroup
 	Threads   = 10
-	Semaphore = make(chan struct{}, Threads)
+	semaphore = make(chan struct{}, Threads)
 )
 
 func main() {
@@ -51,9 +51,9 @@ func main() {
 	switch threadUrl == "" {
 	case true:
 		url := getUserInput()
-		media = Scrape(url)
+		media = scrape(url)
 	case false:
-		media = Scrape(threadUrl)
+		media = scrape(threadUrl)
 	}
 
 	// Start the progress bar
@@ -72,7 +72,7 @@ func main() {
 	}
 
 	wg.Wait()
-	close(Semaphore)
+	close(semaphore)
 
 	if silent == false {
 		bar.FinishPrint(color.GreenString("%s", "Download completed!"))
@@ -86,21 +86,31 @@ func main() {
 	}
 }
 
+var failed int
+
 func getUserInput() string {
+	if failed > 1 {
+		color.Yellow("%s", "Are you having problems pasting in the url?")
+		color.Green("%s", "\tPlease try [ctrl+shift+v] (windows/linux), [cmd+v] (macOs) or right click, then select paste")
+		os.Exit(1)
+	}
+
 	var url string
 	notice := color.GreenString("%s", "Paste thread URL, then press 'Enter':")
 
 	fmt.Println(notice)
 	_, err := fmt.Scanln(&url)
 	if err != nil {
-		panic(err)
-	}
-	if govalidator.IsURL(url) {
-		return url
-	} else {
+		failed++
 		color.Red("%s", "Invalid URL provided. Please confirm the URL then try again.")
 		return getUserInput()
 	}
+	if govalidator.IsURL(url) {
+		return url
+	}
+	failed++
+	color.Red("%s", "Invalid URL provided. Please confirm the URL then try again.")
+	return getUserInput()
 }
 
 // setDownloadLocation sets the download folder in the user's home folder

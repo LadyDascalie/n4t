@@ -15,8 +15,8 @@ import (
 var fileRegExp = regexp.MustCompile(`[0-9]`)
 
 func download(media string, wg *sync.WaitGroup, bar *pb.ProgressBar) {
-	Semaphore <- struct{}{}
-	defer func() { <-Semaphore }()
+	semaphore <- struct{}{}
+	defer func() { <-semaphore }()
 	defer wg.Done()
 	if silent == false {
 		defer bar.Increment()

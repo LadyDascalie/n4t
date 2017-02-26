@@ -13,7 +13,7 @@ import (
 
 var re = regexp.MustCompile(`((https?:\/\/)(.*\.org))(\/[a-z]{1,}\/)`)
 
-func Scrape(url string) (media []string) {
+func scrape(url string) (media []string) {
 	newurl := fetchRedirectedURL(url)
 	board := extractBoard(newurl)
 	response, err := http.Get(newurl)
@@ -37,7 +37,7 @@ func Scrape(url string) (media []string) {
 	}
 	for _, post := range thread.Posts {
 		if post.Tim != 0 {
-			media = append(media, fmt.Sprintf("https://%s%s%d%s", CDNStem, board, post.Tim, post.Ext))
+			media = append(media, fmt.Sprintf("https://%s%s%d%s", cdnStem, board, post.Tim, post.Ext))
 		}
 	}
 	return media
