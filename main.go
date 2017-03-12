@@ -79,7 +79,8 @@ func main() {
 	}
 
 	// Prepare to sort by extension
-	sortdir.Sort(location, true)
+	files := sortdir.Ls(location, true)
+	sortdir.SortByTypes(files)
 
 	if fails.Get > 0 || fails.Copy > 0 {
 		color.Red("%s", fails.String())
