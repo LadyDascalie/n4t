@@ -58,9 +58,12 @@ func fetchRedirectedURL(url string) string {
 	return response.Request.URL.String()
 }
 
+// Posts is the full thread object
 type Posts struct {
 	Posts []Post `json:"posts,omitempty"`
 }
+
+// Post is a single post within the thread
 type Post struct {
 	Tim int    `json:"tim,omitempty"`
 	Ext string `json:"ext,omitempty"`

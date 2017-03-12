@@ -17,25 +17,26 @@ import (
 const (
 	boardStem = "4chan.org"
 	cdnStem   = "i.4cdn.org"
-	DLFolder  = "4tools_downloads"
+	dlFolder  = "4tools_downloads"
 )
 
 var (
 	fails           Failures // Global fail count
 	subFolderName   string   // flag
-	threadUrl       string   // flag
+	threadURL       string   // flag
 	silent          bool     // flag
 	threadsOverride int
 
 	// worker config
-	wg        sync.WaitGroup
+	wg sync.WaitGroup
+	// Threads determines how many concurrent downloads are allowed
 	Threads   = 10
 	semaphore = make(chan struct{}, Threads)
 )
 
 func main() {
 	flag.StringVar(&subFolderName, "f", "", "Choose a subfolder name:\n\t n4t -f folder_name")
-	flag.StringVar(&threadUrl, "u", "", "Choose a subfolder name:\n\t n4t -u thread_url")
+	flag.StringVar(&threadURL, "u", "", "Choose a subfolder name:\n\t n4t -u thread_url")
 	flag.IntVar(&threadsOverride, "t", 0, "Choose how concurrent downloads to run (max 12):\n\t n4t -t 5")
 	flag.BoolVar(&silent, "s", false, "Choose silent output:\n\t n4t -s")
 	flag.Parse()
@@ -48,12 +49,12 @@ func main() {
 	var media []string
 
 	// Get url then scrape it
-	switch threadUrl == "" {
+	switch threadURL == "" {
 	case true:
 		url := getUserInput()
 		media = scrape(url)
 	case false:
-		media = scrape(threadUrl)
+		media = scrape(threadURL)
 	}
 
 	// Start the progress bar
@@ -122,9 +123,9 @@ func setDownloadLocation() (downloadLocation string) {
 	}
 
 	if subFolderName != "" {
-		downloadLocation = filepath.Join(usr.HomeDir, DLFolder, subFolderName)
+		downloadLocation = filepath.Join(usr.HomeDir, dlFolder, subFolderName)
 	} else {
-		downloadLocation = filepath.Join(usr.HomeDir, DLFolder)
+		downloadLocation = filepath.Join(usr.HomeDir, dlFolder)
 	}
 
 	os.MkdirAll(downloadLocation, 0755)
