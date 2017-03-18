@@ -60,7 +60,7 @@ func main() {
 	// Start the progress bar
 	var bar *pb.ProgressBar
 	count := len(media)
-	if silent == false {
+	if !silent {
 		bar = pb.StartNew(count)
 	}
 
@@ -75,7 +75,7 @@ func main() {
 	wg.Wait()
 	close(semaphore)
 
-	if silent == false {
+	if !silent {
 		bar.FinishPrint(color.GreenString("%s", "Download completed!"))
 	}
 

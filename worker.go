@@ -18,7 +18,7 @@ func download(media string, wg *sync.WaitGroup, bar *pb.ProgressBar) {
 	semaphore <- struct{}{}
 	defer func() { <-semaphore }()
 	defer wg.Done()
-	if silent == false {
+	if !silent {
 		defer bar.Increment()
 	}
 
