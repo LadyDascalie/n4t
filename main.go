@@ -122,10 +122,10 @@ func setDownloadLocation() (downloadLocation string) {
 		panic(err)
 	}
 
+	downloadLocation = filepath.Join(usr.HomeDir, dlFolder)
+
 	if subFolderName != "" {
-		downloadLocation = filepath.Join(usr.HomeDir, dlFolder, subFolderName)
-	} else {
-		downloadLocation = filepath.Join(usr.HomeDir, dlFolder)
+		downloadLocation = filepath.Join(downloadLocation, subFolderName)
 	}
 
 	os.MkdirAll(downloadLocation, 0755)

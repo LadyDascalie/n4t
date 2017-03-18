@@ -11,23 +11,31 @@ import (
 	"github.com/fatih/color"
 )
 
+// This regex breaks down the 4chan urls into components
+// https://regex101.com/r/NQIQ4H/1/
 var re = regexp.MustCompile(`((https?:\/\/)(.*\.org))(\/[a-z]{1,}\/)`)
 
 func scrape(url string) (media []string) {
-	newurl := fetchRedirectedURL(url)
-	board := extractBoard(newurl)
-	response, err := http.Get(newurl)
+	// get the redirected url
+	postRedirectionURL := fetchRedirectedURL(url)
+	// get the board letter
+	board := extractBoard(postRedirectionURL)
+
+	// Fetch the post
+	response, err := http.Get(postRedirectionURL)
 	if err != nil {
 		color.Red("Error loading thread: %s", err.Error())
 		os.Exit(1)
 	}
 
+	// Read it
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		color.Red("Error reading response: %s", err.Error())
 		os.Exit(1)
 	}
 
+	// Unmarshall it
 	var thread Posts
 	err = json.Unmarshal(body, &thread)
 	if err != nil {
@@ -35,6 +43,8 @@ func scrape(url string) (media []string) {
 		color.Red("Thread has most likely 404'd!")
 		os.Exit(1)
 	}
+
+	// Create the media urls
 	for _, post := range thread.Posts {
 		if post.Tim != 0 {
 			media = append(media, fmt.Sprintf("https://%s%s%d%s", cdnStem, board, post.Tim, post.Ext))
@@ -49,8 +59,8 @@ func extractBoard(url string) string {
 }
 
 func fetchRedirectedURL(url string) string {
-	newurl := url + ".json"
-	response, err := http.Get(newurl)
+	urlToThreadAsJSON := url + ".json"
+	response, err := http.Get(urlToThreadAsJSON)
 	if err != nil {
 		color.Red("Error loading thread: %s", err.Error())
 		os.Exit(1)
