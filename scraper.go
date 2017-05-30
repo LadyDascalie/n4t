@@ -8,12 +8,14 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 )
 
 // This regex breaks down the 4chan urls into components
 // https://regex101.com/r/NQIQ4H/1/
 var re = regexp.MustCompile(`((https?:\/\/)(.*\.org))(\/[a-z]{1,}\/)`)
+var threadUrlWithoutUserInput = regexp.MustCompile(`(.*)(\/thread\/)([0-9]{1,})`)
 
 func scrape(url string) (media []string) {
 	// get the redirected url
@@ -39,6 +41,7 @@ func scrape(url string) (media []string) {
 	var thread Posts
 	err = json.Unmarshal(body, &thread)
 	if err != nil {
+		spew.Dump(err)
 		color.Red("Error reading JSON: %s", err.Error())
 		color.Red("Thread has most likely 404'd!")
 		os.Exit(1)
@@ -59,11 +62,11 @@ func extractBoard(url string) string {
 }
 
 func fetchRedirectedURL(url string) string {
-	urlToThreadAsJSON := url + ".json"
+	matches := threadUrlWithoutUserInput.FindAllStringSubmatch(url, -1)
+	urlToThreadAsJSON := matches[0][0] + ".json"
 	response, err := http.Get(urlToThreadAsJSON)
 	if err != nil {
 		color.Red("Error loading thread: %s", err.Error())
-		os.Exit(1)
 	}
 	return response.Request.URL.String()
 }
