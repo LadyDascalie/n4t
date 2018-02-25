@@ -17,7 +17,7 @@ import (
 const (
 	boardStem = "4chan.org"
 	cdnStem   = "i.4cdn.org"
-	dlFolder  = "4tools_downloads"
+	dlFolder  = "n4t_downloads"
 )
 
 var (
